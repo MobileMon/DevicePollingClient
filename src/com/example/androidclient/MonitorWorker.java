@@ -77,7 +77,7 @@ public class MonitorWorker extends Thread {
 			
 			
 		
-			out.println("1"); //1 for okay
+			out.println("1"); //1 to report okay
 		
 
 			out.flush();
