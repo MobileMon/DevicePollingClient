@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -23,7 +24,8 @@ public class MainActivity extends Activity {
 	EditText editTextRegistrationServerPort;
 	Context mContext;
 	MonitorWorker mMonitorWorker;
-
+	TextView textViewDeviceInfo;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,8 +38,9 @@ public class MainActivity extends Activity {
 		editTextRegistrationServerPort = (EditText)findViewById(R.id.editTextRegistrationServerPort);
 		mContext = this;
 		
+		textViewDeviceInfo = (TextView)findViewById(R.id.textViewDeviceInfo);
 		
-		mMonitorWorker = new MonitorWorker();
+		mMonitorWorker = new MonitorWorker(this);
 		mMonitorWorker.start();
 		
 	}
@@ -51,11 +54,19 @@ public class MainActivity extends Activity {
 		
 		final String deviceipAddress = Net.getIPAddress(true);
 		
-		final Button b = (Button)v;
-		b.setText(deviceipAddress);
+		//final Button b = (Button)v;
+		//b.setText(deviceipAddress);
 		
 		final String serverIpAddress = editTextRegistrationServerIPAddress.getText()+"";
 		final int serverPortNumber = Integer.parseInt(editTextRegistrationServerPort.getText()+"");
+		
+		
+
+		WifiManager wm = (WifiManager)mContext.getSystemService(Context.WIFI_SERVICE);
+		final String uniqueDeviceId =  wm.getConnectionInfo().getMacAddress();
+		
+		
+		
 		Thread thread = new Thread()
 		{
 		    @Override
@@ -75,8 +86,6 @@ public class MainActivity extends Activity {
 			
 				
 				
-				WifiManager wm = (WifiManager)mContext.getSystemService(Context.WIFI_SERVICE);
-				String uniqueDeviceId =  wm.getConnectionInfo().getMacAddress();
 				
 			
 				out.println(deviceipAddress);
@@ -87,11 +96,21 @@ public class MainActivity extends Activity {
 				out.close();
 				
 				
+				
 				try {
 					socketServer.close();
 				} catch (IOException e) {
 				}
-		    }
+				
+				
+				textViewDeviceInfo.post(new Runnable() {
+			        public void run() {
+			        	textViewDeviceInfo.setText("Device ID: " +uniqueDeviceId + "\n" + "IP Address: " +deviceipAddress + "\n" + "Port number: " +mMonitorWorker.getPortNumber() );
+			        }
+			    });
+			}
+				
+		    
 		};
 
 		thread.start();

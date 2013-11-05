@@ -42,5 +42,15 @@
         android:text="Register" 
         android:onClick="registerDeviceWithServer"
         />
+    
+    
+      <TextView
+           android:id="@+id/textViewDeviceInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Device Info:" />
+    
+    
+    
 
 </LinearLayout>
